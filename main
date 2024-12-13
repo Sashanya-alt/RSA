@@ -1,0 +1,109 @@
+import math
+import random
+
+mes = [0] * 10  # Open text
+cipher = [0] * 10  # Encrypted text
+decipher = [0] * 10  # Decrypted text
+
+def isprime(n):
+    """Check if a number is prime."""
+    n = int(n)
+    if n < 2:
+        return False
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+def gcd(a, b):
+    """Compute the greatest common divisor (GCD) of a and b."""
+    while b:
+        a, b = b, a % b
+    return a
+
+def KEY(b, e, d):
+    """Find an appropriate e that satisfies the condition."""
+    while True:
+        ost = (d * e) % b
+        print(f"e = {e} \t {d} * {e} mod {b} = {d * e} mod {d} = {ost}")
+        if ost == 1:
+            break
+        else:
+            e += 1
+    return e
+
+def RSA_Encrypt(n, e):
+    """Encrypt the open text using RSA."""
+    l = len(mes)
+    print("Initial text:")
+    for i in range(l):
+        print(mes[i], end=" ")
+    print("\n")
+
+    for j in range(l):
+        a = pow(mes[j], e)
+        cipher[j] = a % n
+
+    print("Encrypted text:")
+    for i in range(l):
+        print(cipher[i], end=" ")
+    print("\n")
+
+def RSA_Decrypt(n, d):
+    """Decrypt the encrypted text using RSA."""
+    l = len(cipher)
+
+    for i in range(l):
+        a = pow(cipher[i], d)
+        decipher[i] = a % n
+
+    print("Decrypted text:")
+    for i in range(l):
+        print(decipher[i], end=" ")
+    print("\n")
+
+def Generation():
+    """Generate a random text."""
+    for i in range(len(mes)):
+        mes[i] = random.randint(0, 10)
+    print("Generated random text:")
+    for i in range(len(mes)):
+        print(mes[i], end=" ")
+    print("\n")
+
+def main():
+    """Main function to execute RSA encryption and decryption."""
+    p = int(input("Enter the first prime number p: "))
+    while not isprime(p):
+        print(f"{p} is not a prime number. Please enter a prime number.")
+        p = int(input("Enter the first prime number p: "))
+
+    q = int(input("Enter the second prime number q: "))
+    while not isprime(q):
+        print(f"{q} is not a prime number. Please enter a prime number.")
+        q = int(input("Enter the second prime number q: "))
+
+    n = p * q
+    m = (p - 1) * (q - 1)  # Euler's totient
+
+    print(f"n = p * q = {n}")
+    print(f"m = (p - 1) * (q - 1) = {m}\n")
+
+    d = 2
+    while True:
+        if gcd(d, m) == 1:
+            print(f"d = {d} and m = {m} are coprime.")
+            break
+        d += 1
+
+    e = 1
+    e = KEY(m, e, d)  # Find e
+    print(f"\nPublic key e = {e}, n = {n}")
+    print(f"Private key d = {d}, n = {n}\n")
+
+    Generation()
+    RSA_Encrypt(n, e)
+    RSA_Decrypt(n, d)
+
+if __name__ == "__main__":
+    main()
